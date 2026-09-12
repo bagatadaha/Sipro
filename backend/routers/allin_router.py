@@ -153,6 +153,10 @@ async def update_component(cid: str, p: ComponentIn, user: dict = Depends(requir
     if not cur:
         raise HTTPException(status_code=404, detail="Komponen tidak ditemukan.")
     upd = {k: v for k, v in p.model_dump(exclude_unset=True).items() if v is not None and k != "code"}
+    if cur.get("code") == ae.BOOKING_CODE:
+        # Nominal/cara hitung komponen BOOKING terkunci: selalu = booking fee deal.
+        for k in ("calc_method", "amount", "pct"):
+            upd.pop(k, None)
     upd["updated_at"] = now_iso()
     await db.cost_components.update_one({"id": cid}, {"$set": upd})
     await audit_log(user, "update", "cost_components", cid, {"fields": sorted(upd)})

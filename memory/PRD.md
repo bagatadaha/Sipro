@@ -26,7 +26,9 @@ Lanjutkan development repo sipro:
 ### Perbaikan lingkungan
 - `ReferenceSelect.js`: fungsi `useCustom` → `applyCustom` (eslint rules-of-hooks memblokir build).
 
+### Label komponen BOOKING (12 Jun 2026)
+- Master komponen & skema all-in: badge "otomatis dari booking fee", cara hitung & nominal terkunci ("= booking fee deal"); `PUT /cost-components/{id}` mengabaikan `calc_method/amount/pct` untuk kode BOOKING.
+
 ## Backlog / catatan
 - P1: Refund booking fee pada deal yang sudah mengalihkan titipan ke komponen BOOKING (saldo titipan 2-1450 = 0; refund harus dari titipan biaya 2-1470).
-- P2: Tampilkan label "BOOKING (dari booking fee)" khusus di master komponen all-in; sembunyikan input nominal untuk komponen BOOKING.
 - P2: Laporan pembayaran: filter "tanpa bukti" untuk data lama (sebelum kewajiban bukti).

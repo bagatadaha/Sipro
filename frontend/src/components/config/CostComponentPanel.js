@@ -62,8 +62,9 @@ export default function CostComponentPanel() {
             {rows.map((r) => (
               <tr key={r.id} data-testid={P75.componentRow} data-code={r.code} className={r.is_active ? "" : "opacity-50"}>
                 <td className="px-3 py-2 font-mono text-xs">{r.code}</td>
-                <td className="px-3 py-2">{r.name}{r.kpr_only ? <span className="ml-1 text-[10px] text-muted-foreground">(KPR)</span> : null}</td>
-                <td className="px-3 py-2 text-xs">{METHOD[r.calc_method]} {r.calc_method === "nominal_tetap" ? `· ${formatIDR(r.amount)}` : `· ${r.pct}%`}</td>
+                <td className="px-3 py-2">{r.name}{r.kpr_only ? <span className="ml-1 text-[10px] text-muted-foreground">(KPR)</span> : null}
+                  {r.code === "BOOKING" ? <span data-testid="cost-component-booking-badge" className="ml-1.5 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800">otomatis dari booking fee</span> : null}</td>
+                <td className="px-3 py-2 text-xs">{r.code === "BOOKING" ? "= booking fee deal" : `${METHOD[r.calc_method]} ${r.calc_method === "nominal_tetap" ? `· ${formatIDR(r.amount)}` : `· ${r.pct}%`}`}</td>
                 <td className="px-3 py-2 text-xs">{TREAT[r.default_treatment]}</td>
                 <td className="px-3 py-2 font-mono text-[11px]">{r.gl_expense} / {r.gl_liability} / {r.gl_ap}</td>
                 <td className="px-3 py-2 text-center text-xs">{r.is_active ? "ya" : "tidak"}</td>
@@ -81,15 +82,22 @@ export default function CostComponentPanel() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1"><Label htmlFor="cc-code">Kode</Label><Input id="cc-code" className="bg-background uppercase" value={form.code} disabled={!!form.id} onChange={(e) => set("code", e.target.value.toUpperCase())} /></div>
               <div className="space-y-1"><Label htmlFor="cc-name">Nama</Label><Input id="cc-name" className="bg-background" value={form.name} onChange={(e) => set("name", e.target.value)} /></div>
+              {form.code === "BOOKING" ? (
+                <p data-testid="cost-component-booking-note" className="rounded-md border border-sky-200 bg-sky-50 p-2 text-[11px] text-sky-900 sm:col-span-2">
+                  Komponen khusus: nominal <b>otomatis mengikuti booking fee deal</b> — cara hitung & nominal terkunci. Booking fee yang dibayar pembeli melunasi komponen ini (titipan biaya), bukan termin unit.
+                </p>
+              ) : null}
               <div className="space-y-1"><Label>Cara hitung</Label>
-                <Select value={form.calc_method} onValueChange={(v) => set("calc_method", v)}>
-                  <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>
+                <Select value={form.calc_method} onValueChange={(v) => set("calc_method", v)} disabled={form.code === "BOOKING"}>
+                  <SelectTrigger className="bg-background" data-testid="cost-component-calc-method"><SelectValue /></SelectTrigger>
                   <SelectContent>{Object.entries(METHOD).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                 </Select></div>
-              <div className="space-y-1"><Label>{form.calc_method === "nominal_tetap" ? "Nominal (Rp)" : "Persen (%)"}</Label>
-                {form.calc_method === "nominal_tetap"
-                  ? <RupiahInput className="bg-background" value={form.amount} onChange={(e) => set("amount", e.target.value)} />
-                  : <Input type="number" className="bg-background" value={form.pct} onChange={(e) => set("pct", e.target.value)} />}</div>
+              <div className="space-y-1"><Label>{form.code === "BOOKING" ? "Nominal" : form.calc_method === "nominal_tetap" ? "Nominal (Rp)" : "Persen (%)"}</Label>
+                {form.code === "BOOKING"
+                  ? <Input className="bg-background" data-testid="cost-component-amount-locked" value="= booking fee deal" disabled readOnly />
+                  : form.calc_method === "nominal_tetap"
+                    ? <RupiahInput className="bg-background" value={form.amount} onChange={(e) => set("amount", e.target.value)} />
+                    : <Input type="number" className="bg-background" value={form.pct} onChange={(e) => set("pct", e.target.value)} />}</div>
               <div className="space-y-1 sm:col-span-2"><Label>Perlakuan default</Label>
                 <Select value={form.default_treatment} onValueChange={(v) => set("default_treatment", v)}>
                   <SelectTrigger className="bg-background"><SelectValue /></SelectTrigger>

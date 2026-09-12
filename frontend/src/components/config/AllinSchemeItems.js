@@ -1,5 +1,6 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { RupiahInput } from "@/components/ui/rupiah-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -31,6 +32,7 @@ export const AllinSchemeItems = ({ items, components, onChange }) => {
             className="grid min-w-0 grid-cols-1 items-center gap-3 rounded-md border bg-card p-2 sm:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium" data-testid={`allin-component-${i}`}>{c.name}{c.kpr_only ? <span className="ml-1 text-[10px] text-muted-foreground">(KPR)</span> : null}</p>
+              {c.code === "BOOKING" ? <span data-testid={`allin-booking-badge-${i}`} className="inline-block rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-800">otomatis dari booking fee</span> : null}
               <p className="font-mono text-[11px] text-muted-foreground">{c.code}</p>
             </div>
             <div className="min-w-0">
@@ -42,8 +44,10 @@ export const AllinSchemeItems = ({ items, components, onChange }) => {
             </div>
             <div className="min-w-0">
               <Label htmlFor={`allin-amount-${i}`} className="sr-only">Nominal pengganti</Label>
-              <RupiahInput id={`allin-amount-${i}`} data-testid={`allin-amount-${i}`} placeholder="Sesuai rumus" disabled={!it}
-                value={it?.override_amount ?? ""} onChange={(e) => setItem(c, { override_amount: e.target.value })} />
+              {c.code === "BOOKING"
+                ? <Input id={`allin-amount-${i}`} data-testid={`allin-amount-${i}`} value="= booking fee deal" disabled readOnly className="bg-secondary/40 text-xs" />
+                : <RupiahInput id={`allin-amount-${i}`} data-testid={`allin-amount-${i}`} placeholder="Sesuai rumus" disabled={!it}
+                  value={it?.override_amount ?? ""} onChange={(e) => setItem(c, { override_amount: e.target.value })} />}
             </div>
           </div>
         );

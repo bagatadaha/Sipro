@@ -83,8 +83,8 @@ export default function AllinSchemePanel() {
                 const comp = comps.find((c) => c.code === it.component_code);
                 return (
                   <li key={it.component_code} className="flex items-center justify-between gap-2 py-1">
-                    <span className="min-w-0 truncate">{comp?.name || it.component_code} <span className="font-mono text-[10px] text-muted-foreground">{it.component_code}</span> · {TR[it.treatment]}{it.override_amount ? " · terkunci" : ""}</span>
-                    <span className="tabular-nums">{pv ? formatIDR(pv.amount) : "—"}</span>
+                    <span className="min-w-0 truncate">{comp?.name || it.component_code} <span className="font-mono text-[10px] text-muted-foreground">{it.component_code}</span> · {TR[it.treatment]}{it.component_code === "BOOKING" ? " · otomatis dari booking fee" : it.override_amount ? " · terkunci" : ""}</span>
+                    <span className="tabular-nums">{it.component_code === "BOOKING" ? "= booking fee" : pv ? formatIDR(pv.amount) : "—"}</span>
                   </li>
                 );
               })}
